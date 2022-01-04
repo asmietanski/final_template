@@ -102,10 +102,10 @@ class Enrollment(models.Model):
     # Has question content
     # Other fields and methods you would like to design
 class Question(models.Model):
-    # Foreign key to lesson
-    question_text = models.CharField(max_length=30)
+    course = models.ManyToManyField(Course, related_name = 'questions')
+    question_text = models.CharField(max_length=200)
     grade = models.IntegerField(default=0)
-    lesson_id = models.ManyToManyField(Course)
+    # lesson_id = models.ManyToManyField(Course)
     # question grade/mark
 
     # <HINT> A sample model method to calculate if learner get the score of the question
@@ -118,8 +118,8 @@ class Question(models.Model):
             return False
 
 class Choice (models.Model):
-    choice_test =models.CharField(max_length=30)
-    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    question = models.ManyToManyField(Question, related_name = 'choices')
+    choice_text = models.CharField(max_length = 200)
     is_correct = models.BooleanField(default=False)
 
 
