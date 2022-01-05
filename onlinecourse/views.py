@@ -118,8 +118,10 @@ def submit(request, course_id):
     print(enrollment)
     print(request.POST)
     choices = extract_answers(request)
+    print (choices)
     choices_obj = Choice.objects.filter(id__in=choices)
     submission = Submission.objects.create(enrollment_id = enrollment.id)
+    print (choices_obj)
     submission.choices.set(choices_obj)
     return redirect('onlinecourse:show_exam_result', course_id, submission.id) 
 
@@ -128,6 +130,7 @@ def extract_answers(request):
     submitted_anwsers = []
     for key in request.POST:
         if key.startswith('choice'):
+            #print(request.POST[key])
             value = request.POST[key]
             choice_id = int(value)
             submitted_anwsers.append(choice_id)
@@ -146,14 +149,17 @@ def show_exam_result(request, course_id, submission_id):
     course = Course.objects.get(pk=course_id)
     submission = Submission.objects.get(pk=submission_id)
     selected_choices = submission.choices.all()
+    print (selected_choices)
 
     questions_all = course.questions.all()
     total_mark = round(course.questions.all().aggregate(Sum("grade"))["grade__sum"])
+    print ("total ", total_mark)
     grade = 0
     for question in questions_all:
         if question.is_get_score(selected_choices):
             grade += question.grade
-
+    print ( "grade", grade)
+    print ( "result", round(grade/total_mark))
     context = {
         'course': course,
         'grade': round(grade),
